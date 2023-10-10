@@ -5,3 +5,10 @@ C:\Users\brian\Desktop\scuola\informatica\c#\Anagrafe\Anagrafe\obj\Debug\Anagraf
 C:\Users\brian\Desktop\scuola\informatica\c#\Anagrafe\Anagrafe\obj\Debug\Anagrafe.csproj.CoreCompileInputs.cache
 C:\Users\brian\Desktop\scuola\informatica\c#\Anagrafe\Anagrafe\obj\Debug\Anagrafe.exe
 C:\Users\brian\Desktop\scuola\informatica\c#\Anagrafe\Anagrafe\obj\Debug\Anagrafe.pdb
+C:\Users\brian\Desktop\scuola\informatica\c#\Esercizi-Informatica\Anagrafe\Anagrafe\bin\Debug\Anagrafe.exe.config
+C:\Users\brian\Desktop\scuola\informatica\c#\Esercizi-Informatica\Anagrafe\Anagrafe\bin\Debug\Anagrafe.exe
+C:\Users\brian\Desktop\scuola\informatica\c#\Esercizi-Informatica\Anagrafe\Anagrafe\bin\Debug\Anagrafe.pdb
+C:\Users\brian\Desktop\scuola\informatica\c#\Esercizi-Informatica\Anagrafe\Anagrafe\obj\Debug\Anagrafe.csproj.AssemblyReference.cache
+C:\Users\brian\Desktop\scuola\informatica\c#\Esercizi-Informatica\Anagrafe\Anagrafe\obj\Debug\Anagrafe.csproj.CoreCompileInputs.cache
+C:\Users\brian\Desktop\scuola\informatica\c#\Esercizi-Informatica\Anagrafe\Anagrafe\obj\Debug\Anagrafe.exe
+C:\Users\brian\Desktop\scuola\informatica\c#\Esercizi-Informatica\Anagrafe\Anagrafe\obj\Debug\Anagrafe.pdb

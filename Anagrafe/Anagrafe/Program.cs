@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.ConstrainedExecution;
 using System.Runtime.InteropServices;
+using System.Security.Principal;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -62,21 +64,15 @@ namespace Anagrafe
                         switch (r)
                         {
                             case 0:
-                                Console.WriteLine("Inserimento completato. Premi invio per tornare al menù principale");
-                                Console.ReadLine();
-                                Console.Clear();
+                                Console.WriteLine("Inserimento completato");
                                 break;
 
                             case 1:
-                                Console.WriteLine("Persona già presente all'interno dell'anagrafe. Premi invio per tornare al menù principale");
-                                Console.ReadLine();
-                                Console.Clear();
+                                Console.WriteLine("Persona già presente all'interno dell'anagrafe");
                                 break;
 
                             case 2:
-                                Console.WriteLine("Anagrafe al completo. Premi invio per tornare al menù principale");
-                                Console.ReadLine();
-                                Console.Clear();
+                                Console.WriteLine("Anagrafe al completo");
                                 break;
                         }
                         break;
@@ -86,16 +82,11 @@ namespace Anagrafe
                         if (pos != 0)
                         {
                             Visualizza(persone, pos);
-                            Console.WriteLine("Premi invio per tornare al menù principale");
-                            Console.ReadLine();
-                            Console.Clear();
 
                         }
                         else
                         {
-                            Console.WriteLine("L'anagrafe è vuota. Premi invio per tornare al menù principale");
-                            Console.ReadLine();
-                            Console.Clear();
+                            Console.WriteLine("L'anagrafe è vuota");
                         }
                         break;
 
@@ -103,23 +94,21 @@ namespace Anagrafe
                         if (pos != 0)
                         {
                             Eta(persone, codFiscale);
-                            Console.WriteLine("Premi invio per tornare al menù principale");
-                            Console.ReadLine();
-                            Console.Clear();
                         }
                         else
                         {
-                            Console.WriteLine("L'anagrafe è vuota. Premi invio per tornare al menù principale");
-                            Console.ReadLine();
-                            Console.Clear();
+                            Console.WriteLine("L'anagrafe è vuota");
                         }
                         break;
                 }
+                if (scelta != 4)
+                {
+                    Console.WriteLine("Premi invio per tornare al menù principale");
+                    Console.ReadLine();
+                    Console.Clear();
+                }
 
             } while (scelta != 4);
-
-
-
         }
 
         static int Inserimento(persona[] persone, ref int pos)
