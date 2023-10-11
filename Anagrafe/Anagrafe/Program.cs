@@ -93,7 +93,18 @@ namespace Anagrafe
                     case 3:
                         if (pos != 0)
                         {
-                            Eta(persone, codFiscale);
+                            switch (MenuEta(persone))
+                            {
+                                case 1:
+
+                                    EtaPersona(persone, codFiscale);
+                                    break;
+
+                                case 2:
+
+                                    Archivio(persone);
+                                    break;
+                            }
                         }
                         else
                         {
@@ -246,7 +257,7 @@ namespace Anagrafe
             }
         }
 
-        static void Eta(persona[] persone, string codFiscale)
+        static void EtaPersona(persona[] persone, string codFiscale)
         {
             DateTime data = DateTime.Now;
             int eta = -1;
@@ -282,6 +293,36 @@ namespace Anagrafe
             }
 
             return eta;
+        }
+
+        static int MenuEta(persona[] persone)
+        {
+            int scelta;
+
+            Console.WriteLine("Inserisci la scelta:\n");
+            Console.WriteLine("[1] <<  persona");
+            Console.WriteLine("[2] <<  archivio");
+
+            scelta = Convert.ToInt32(Console.ReadLine());
+            Console.Clear();
+
+            return scelta;
+
+        }
+
+        static void Archivio(persona[] persone)
+        {
+            DateTime data = DateTime.Now;
+
+            for (int i = 0; i < persone.Length; i++)
+            {
+                Console.WriteLine($"========== °{i + 1} PERSONA ==========\n");
+                Console.WriteLine($"Nome: {persone[i].nome}");
+                Console.WriteLine($"Cognome: {persone[i].cognome}");
+                Console.Write($"Età: ");
+                Console.Write(Anni(persone[i].nascita, data));
+                Console.WriteLine("\n================================\n\n");
+            }
         }
     }
 }
