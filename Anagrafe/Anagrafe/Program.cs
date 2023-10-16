@@ -102,7 +102,7 @@ namespace Anagrafe
 
                                 case 2:
 
-                                    Archivio(persone);
+                                    Archivio(persone, pos);
                                     break;
                             }
                         }
@@ -262,7 +262,7 @@ namespace Anagrafe
             DateTime data = DateTime.Now;
             int eta = -1;
 
-            Console.WriteLine("Inserisci il codice fiscale della persona della quale vuoi sapere l'età:");
+            Console.Write("Inserisci il codice fiscale della persona della quale vuoi sapere l'età: ");
             codFiscale = Console.ReadLine();
 
             foreach (var persona in persone)
@@ -270,7 +270,7 @@ namespace Anagrafe
                 if (persona.codFiscale == codFiscale)
                 {
                     eta = Anni(persona.nascita, data);
-                    Console.WriteLine($"Nome: {persona.nome}\nCognome: {persona.cognome}\nEtà: {eta}\n");
+                    Console.WriteLine($"\nNome: {persona.nome}\nCognome: {persona.cognome}\nEtà: {eta}\n");
                     break;
                 }
             }
@@ -310,11 +310,11 @@ namespace Anagrafe
 
         }
 
-        static void Archivio(persona[] persone)
+        static void Archivio(persona[] persone, int pos)
         {
             DateTime data = DateTime.Now;
 
-            for (int i = 0; i < persone.Length; i++)
+            for (int i = 0; i < pos; i++)
             {
                 Console.WriteLine($"========== °{i + 1} PERSONA ==========\n");
                 Console.WriteLine($"Nome: {persone[i].nome}");
