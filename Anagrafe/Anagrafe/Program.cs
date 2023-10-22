@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.ConstrainedExecution;
 using System.Runtime.InteropServices;
 using System.Security.Principal;
@@ -49,7 +50,7 @@ namespace Anagrafe
             do
             {
                 Console.WriteLine("========== ANAGRAFE ==========\n");
-                Console.WriteLine("[1] <<  Inserimento\n\n[2] <<  Visualizza\n\n[3] <<  Età\n\n[4] <<  Exit");
+                Console.WriteLine("[1] <<  Inserimento\n\n[2] <<  Visualizza\n\n[3] <<  Età\n\n[4] <<  Modifica\n\n[5] <<  Elimina\n\n[6] <<  Exit");
                 Console.WriteLine("\n==============================\n");
 
                 Console.WriteLine("Inserisci la scelta: ");
@@ -111,15 +112,37 @@ namespace Anagrafe
                             Console.WriteLine("L'anagrafe è vuota");
                         }
                         break;
+
+                    case 4:
+                        if (pos != 0)
+                        {
+                            Modifica(persone, codFiscale);
+                        }
+                        else
+                        {
+                            Console.WriteLine("L'anagrafe è vuota");
+                        }
+                        break;
+
+                    case 5:
+                        if (pos != 0)
+                        {
+                            Cancella(persone, codFiscale, ref pos);
+                        }
+                        else
+                        {
+                            Console.WriteLine("L'anagrafe è vuota");
+                        }
+                        break;
                 }
-                if (scelta != 4)
+                if (scelta != 6)
                 {
                     Console.WriteLine("Premi invio per tornare al menù principale");
                     Console.ReadLine();
                     Console.Clear();
                 }
 
-            } while (scelta != 4);
+            } while (scelta != 6);
         }
 
         static int Inserimento(persona[] persone, ref int pos)
@@ -322,6 +345,99 @@ namespace Anagrafe
                 Console.Write($"Età: ");
                 Console.Write(Anni(persone[i].nascita, data));
                 Console.WriteLine("\n================================\n\n");
+            }
+        }
+
+        static void Modifica(persona[] persone, string codFiscale)
+        {
+            bool trovato = false;
+            int pos = 0;
+
+            Console.Write("Inserisci il codice fiscale della persona della quale vuoi modificare lo stato civile: ");
+            codFiscale = Console.ReadLine();
+
+            foreach (var persona in persone)
+            {
+                if (persona.codFiscale == codFiscale)
+                {
+                    trovato = true;
+                    switch (SceltaStatoCivile(persone))
+                    {
+                        case 1:
+                            persone[pos].stato = statoCivile.celibe;
+                            break;
+
+                        case 2:
+                            persone[pos].stato = statoCivile.nubile;
+                            break;
+
+                        case 3:
+                            persone[pos].stato = statoCivile.coniugato;
+                            break;
+
+                        case 4:
+                            persone[pos].stato = statoCivile.vedovo;
+                            break;
+
+                        case 5:
+                            persone[pos].stato = statoCivile.separato;
+                            break;
+                    }
+                    break;
+                }
+                else
+                {
+                    pos++;
+                }
+            }
+            if (!trovato)
+            {
+                Console.WriteLine("\nNessuna persona trovata all'interno dell'Anagrafe con questo codice fiscale");
+            }
+            else
+            {
+                Console.WriteLine("\nModifica completata");
+            }
+        }
+
+        static void Cancella(persona[] persone, string codFiscale, ref int pos)
+        {
+            bool trovato = false;
+
+            Console.Write("Inserisci il codice fiscale della persona della persona che vuoi rimuovere dall'archivio: ");
+            codFiscale = Console.ReadLine();
+
+            for (int i = 0; i < persone.Length; i++)
+            {
+                if (persone[i].codFiscale == codFiscale)
+                {
+                    trovato = true;
+
+                    if (i == persone.Length - 1)
+                    {
+                        persone[pos - 1] = new persona();
+                        pos--;
+                        break;
+                    }
+                    else
+                    {
+                        for (int j = i; j < persone.Length - 1; j++)
+                        {
+                            persone[j] = persone[j + 1];
+                        }
+                        persone[pos - 1] = new persona();
+                        pos--;
+                        break;
+                    }
+                }
+            }
+            if (!trovato)
+            {
+                Console.WriteLine("\nNessuna persona trovata all'interno dell'Anagrafe con questo codice fiscale");
+            }
+            else
+            {
+                Console.WriteLine("\nCancellazione completata");
             }
         }
     }
