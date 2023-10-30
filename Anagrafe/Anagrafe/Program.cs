@@ -267,7 +267,7 @@ namespace Anagrafe
         {
             for (int i = 0; i < pos; i++)
             {
-                Console.WriteLine($"========== °{i + 1} PERSONA ==========\n");
+                Console.WriteLine($"========== {i + 1}° PERSONA ==========\n");
                 Console.WriteLine($"Nome: {persone[i].nome}");
                 Console.WriteLine($"Cognome: {persone[i].cognome}");
                 Console.WriteLine($"Nascita: {persone[i].nascita}");
@@ -339,7 +339,7 @@ namespace Anagrafe
 
             for (int i = 0; i < pos; i++)
             {
-                Console.WriteLine($"========== °{i + 1} PERSONA ==========\n");
+                Console.WriteLine($"========== {i + 1}° PERSONA ==========\n");
                 Console.WriteLine($"Nome: {persone[i].nome}");
                 Console.WriteLine($"Cognome: {persone[i].cognome}");
                 Console.Write($"Età: ");
