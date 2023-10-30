@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.ConstrainedExecution;
@@ -40,7 +41,9 @@ namespace Anagrafe
         static void Main(string[] args)
         {
             int scelta = 0, nPersone, pos = 0, r;
-            string codFiscale = "";
+            string codFiscale = "", directory = Environment.CurrentDirectory + "\\log";
+
+            string[] opzioni = { "Inserimento", "Visualizza", "Età", "Modifica", "Elimina", "Leggi log", "Exit" };
 
             Console.Write("Quante persone vuoi registrare? ");
             nPersone = Convert.ToInt32(Console.ReadLine());
@@ -49,23 +52,19 @@ namespace Anagrafe
             persona[] persone = new persona[nPersone];
             do
             {
-                Console.WriteLine("========== ANAGRAFE ==========\n");
-                Console.WriteLine("[1] <<  Inserimento\n\n[2] <<  Visualizza\n\n[3] <<  Età\n\n[4] <<  Modifica\n\n[5] <<  Elimina\n\n[6] <<  Exit");
-                Console.WriteLine("\n==============================\n");
-
-                Console.WriteLine("Inserisci la scelta: ");
-                scelta = Convert.ToInt32(Console.ReadLine());
+                scelta = Menu(opzioni, "ANAGRAFE");
                 Console.Clear();
 
                 switch (scelta)
                 {
-                    case 1:
+                    case 0:
                         r = Inserimento(persone, ref pos);
 
                         switch (r)
                         {
                             case 0:
                                 Console.WriteLine("Inserimento completato");
+                                ScriviFile(directory, "Inserimento completato");
                                 break;
 
                             case 1:
@@ -78,7 +77,7 @@ namespace Anagrafe
                         }
                         break;
 
-                    case 2:
+                    case 1:
 
                         if (pos != 0)
                         {
@@ -91,7 +90,7 @@ namespace Anagrafe
                         }
                         break;
 
-                    case 3:
+                    case 2:
                         if (pos != 0)
                         {
                             switch (MenuEta(persone))
@@ -113,7 +112,7 @@ namespace Anagrafe
                         }
                         break;
 
-                    case 4:
+                    case 3:
                         if (pos != 0)
                         {
                             Modifica(persone, codFiscale);
@@ -124,7 +123,7 @@ namespace Anagrafe
                         }
                         break;
 
-                    case 5:
+                    case 4:
                         if (pos != 0)
                         {
                             Cancella(persone, codFiscale, ref pos);
@@ -134,15 +133,46 @@ namespace Anagrafe
                             Console.WriteLine("L'anagrafe è vuota");
                         }
                         break;
+
+                    case 5:
+                        if (Directory.GetFiles(directory).Length != 0)
+                        {
+                            LeggiFile(SceltaFile(directory));
+                        }
+                        else
+                        {
+                            Console.WriteLine("Non sono presenti file");
+
+                        }
+
+                        break;
                 }
-                if (scelta != 6)
+                if (scelta != opzioni.Length - 1)
                 {
                     Console.WriteLine("Premi invio per tornare al menù principale");
                     Console.ReadLine();
                     Console.Clear();
                 }
 
-            } while (scelta != 6);
+            } while (scelta != opzioni.Length - 1);
+        }
+
+        static int Menu(string[] opzioni, string titolo)
+        {
+            int scelta;
+            Console.WriteLine($"========== {titolo} ==========\n");
+
+            for (int i = 0; i < opzioni.Length; i++)
+            {
+                Console.WriteLine($"[{i + 1}] <<  {opzioni[i]}\n");
+            }
+
+            Console.WriteLine("==============================\n");
+
+            Console.WriteLine("Inserisci la scelta: ");
+            scelta = Convert.ToInt32(Console.ReadLine());
+
+            return scelta - 1;
         }
 
         static int Inserimento(persona[] persone, ref int pos)
@@ -440,6 +470,39 @@ namespace Anagrafe
                 Console.WriteLine("\nCancellazione completata");
             }
         }
+        static void ScriviFile(string path, string stringa)
+        {
+            path += "\\" + DateTime.Now.ToShortDateString().Replace('/', '_') + ".txt";
+            StreamWriter sw = File.AppendText(path);
+            sw.WriteLine(DateTime.Now.ToString() + " " + stringa);
+            sw.Close();
+        }
+
+        static void LeggiFile(string path)
+        {
+            StreamReader sr = File.OpenText(path);
+            string linea;
+            linea = sr.ReadLine();
+            while (linea != null)
+            {
+                Console.WriteLine(linea);
+                linea = sr.ReadLine();
+            }
+        }
+
+        static string SceltaFile(string path)
+        {
+            string[] file = Directory.GetFiles(path);
+            string[] nomi = new string[file.Length];
+
+            for (int i = 0; i < file.Length; i++)
+            {
+                nomi[i] = Path.GetFileName(file[i]);
+            }
+
+            return file[Menu(nomi, "  FILE  ")];
+        }
+
     }
 }
 
