@@ -40,16 +40,12 @@ namespace Anagrafe
     {
         static void Main(string[] args)
         {
-            int scelta = 0, nPersone, pos = 0, r;
+            const int NPERSONE = 4;
+            int scelta = 0, pos = 0, r;
             string codFiscale = "", directory = Environment.CurrentDirectory + "\\log";
+            string[] opzioni = { "Inserimento", "Visualizza", "Età", "Modifica", "Elimina", "Leggi log", "Exit" }, opzioni2 = { "Persona", "Archivio" };
+            persona[] persone = new persona[NPERSONE];
 
-            string[] opzioni = { "Inserimento", "Visualizza", "Età", "Modifica", "Elimina", "Leggi log", "Exit" };
-
-            Console.Write("Quante persone vuoi registrare? ");
-            nPersone = Convert.ToInt32(Console.ReadLine());
-            Console.Clear();
-
-            persona[] persone = new persona[nPersone];
             do
             {
                 scelta = Menu(opzioni, "ANAGRAFE");
@@ -58,31 +54,34 @@ namespace Anagrafe
                 switch (scelta)
                 {
                     case 0:
-                        r = Inserimento(persone, ref pos);
 
-                        switch (r)
+                        if (pos < persone.Length)
                         {
-                            case 0:
-                                Console.WriteLine("Inserimento completato");
-                                ScriviFile(directory, "Inserimento completato");
-                                break;
+                            r = Inserimento(persone, ref pos);
 
-                            case 1:
-                                Console.WriteLine("Persona già presente all'interno dell'anagrafe");
-                                break;
+                            switch (r)
+                            {
+                                case 0:
+                                    Console.WriteLine("Inserimento completato");
+                                    ScriviFile(directory, "Inserimento completato");
+                                    break;
 
-                            case 2:
-                                Console.WriteLine("Anagrafe al completo");
-                                break;
+                                case 1:
+                                    Console.WriteLine("Persona già presente all'interno dell'anagrafe");
+                                    break;
+                            }
+                            break;
+                        }
+                        else
+                        {
+                            Console.WriteLine("Anagrafe al completo");
                         }
                         break;
 
                     case 1:
-
                         if (pos != 0)
                         {
                             Visualizza(persone, pos);
-
                         }
                         else
                         {
@@ -93,16 +92,37 @@ namespace Anagrafe
                     case 2:
                         if (pos != 0)
                         {
-                            switch (MenuEta(persone))
-                            {
-                                case 1:
+                            scelta = (Menu(opzioni2, "  ETA'  "));
+                            Console.Clear();
 
-                                    EtaPersona(persone, codFiscale);
+                            switch (scelta)
+                            {
+                                case 0:
+                                    Console.Write("Inserisci il codice fiscale della persona della quale vuoi sapere l'età: ");
+                                    codFiscale = Console.ReadLine();
+
+                                    if (CheckCF(persone, ref pos, codFiscale))
+                                    {
+                                        for (int i = 0; i < pos; i++)
+                                        {
+                                            if (persone[i].codFiscale == codFiscale)
+                                            {
+                                                Console.WriteLine($"\nNome: {persone[i].nome}\nCognome: {persone[i].cognome}\nEtà: {Anni(persone[i].nascita)}\n");
+                                                break;
+                                            }
+                                        }
+                                    }
+                                    else
+                                    {
+                                        Console.WriteLine("Non è stato trovato nessuno con questo codice fiscale");
+                                    }
                                     break;
 
-                                case 2:
-
-                                    Archivio(persone, pos);
+                                case 1:
+                                    for (int i = 0; i < pos; i++)
+                                    {
+                                        Console.WriteLine($"Nome: {persone[i].nome}\nCognome: {persone[i].cognome}\nEtà: {Anni(persone[i].nascita)}\n\n");
+                                    }
                                     break;
                             }
                         }
@@ -115,7 +135,19 @@ namespace Anagrafe
                     case 3:
                         if (pos != 0)
                         {
-                            Modifica(persone, codFiscale);
+                            Console.Write("Inserisci il codice fiscale della persona della quale vuoi modificare lo stato civile: ");
+                            codFiscale = Console.ReadLine();
+                            Console.WriteLine();
+
+                            if (CheckCF(persone, ref pos, codFiscale))
+                            {
+                                Modifica(persone, codFiscale, ref pos);
+                                Console.WriteLine("\nModifica completata");
+                            }
+                            else
+                            {
+                                Console.WriteLine("Non è stato trovato nessuno con questo codice fiscale");
+                            }
                         }
                         else
                         {
@@ -126,7 +158,18 @@ namespace Anagrafe
                     case 4:
                         if (pos != 0)
                         {
-                            Cancella(persone, codFiscale, ref pos);
+                            Console.Write("Inserisci il codice fiscale della persona che vuoi eliminare dall'anagrafe: ");
+                            codFiscale = Console.ReadLine();
+
+                            if (CheckCF(persone, ref pos, codFiscale))
+                            {
+                                Cancella(persone, codFiscale, ref pos);
+                                Console.WriteLine("\nCancellazione completata");
+                            }
+                            else
+                            {
+                                Console.WriteLine("Non è stato trovato nessuno con questo codice fiscale");
+                            }
                         }
                         else
                         {
@@ -142,9 +185,7 @@ namespace Anagrafe
                         else
                         {
                             Console.WriteLine("Non sono presenti file");
-
                         }
-
                         break;
                 }
                 if (scelta != opzioni.Length - 1)
@@ -177,120 +218,105 @@ namespace Anagrafe
 
         static int Inserimento(persona[] persone, ref int pos)
         {
-            if (pos < persone.Length)
+            Console.WriteLine("Inserisci il nome:");
+            persone[pos].nome = Console.ReadLine();
+
+            Console.WriteLine("\nInserisci il cognome:");
+            persone[pos].cognome = Console.ReadLine();
+
+            Console.WriteLine("\nInserisci la data di nascita (gg/mm/aaaa):");
+            persone[pos].nascita = DateTime.Parse(Console.ReadLine());
+
+            Console.WriteLine("\nInserisci il codice fiscale:");
+            string codFiscale = Console.ReadLine();
+
+            if (CheckCF(persone, ref pos, codFiscale))
             {
-                string codFiscale = "";
-
-                Console.WriteLine("Inserisci il nome:");
-                persone[pos].nome = Console.ReadLine();
-
-                Console.WriteLine("\nInserisci il cognome:");
-                persone[pos].cognome = Console.ReadLine();
-
-                Console.WriteLine("\nInserisci la data di nascita (gg/mm/aaaa):");
-                persone[pos].nascita = DateTime.Parse(Console.ReadLine());
-
-                Console.WriteLine("\nInserisci la cittadinanza:");
-                persone[pos].cittadinanza = Console.ReadLine();
-
-                Console.WriteLine("\nInserisci il codice fiscale:");
-                codFiscale = Console.ReadLine();
-
-                if (ControlloCodFiscale(codFiscale, persone))
-                {
-                    return 1;
-
-                }
-                else
-                {
-                    persone[pos].codFiscale = codFiscale;
-                }
-
-                switch (SceltaGenere(persone))
-                {
-                    case 1:
-                        persone[pos].genere = sesso.uomo;
-                        break;
-
-                    case 2:
-                        persone[pos].genere = sesso.donna;
-                        break;
-                }
-
-                switch (SceltaStatoCivile(persone))
-                {
-                    case 1:
-                        persone[pos].stato = statoCivile.celibe;
-                        break;
-
-                    case 2:
-                        persone[pos].stato = statoCivile.nubile;
-                        break;
-
-                    case 3:
-                        persone[pos].stato = statoCivile.coniugato;
-                        break;
-
-                    case 4:
-                        persone[pos].stato = statoCivile.vedovo;
-                        break;
-
-                    case 5:
-                        persone[pos].stato = statoCivile.separato;
-                        break;
-                }
+                return 1;
             }
-            else
-            {
-                return 2;
-            }
+            persone[pos].codFiscale = codFiscale;
+
+            Console.WriteLine("\nInserisci la cittadinanza:");
+            persone[pos].cittadinanza = Console.ReadLine();
+
+            Console.WriteLine("\nInserisci il genere:");
+            persone[pos].genere = SceltaGenere(persone, ref pos);
+
+            Console.WriteLine("\nInserisci lo stato civile:");
+            persone[pos].stato = SceltaStatoCivile(persone, ref pos);
+
             pos++;
             return 0;
         }
 
-        static bool ControlloCodFiscale(string codFiscale, persona[] persone)
+        static bool CheckCF(persona[] persone, ref int pos, string codFiscale)
         {
-            for (int i = 0; i < persone.Length; i++)
+            for (int i = 0; i < pos; i++)
             {
                 if (codFiscale == persone[i].codFiscale)
                 {
                     return true;
                 }
             }
-
             return false;
         }
 
-        static int SceltaGenere(persona[] persone)
+        static sesso SceltaGenere(persona[] persone, ref int pos)
         {
-            int scelta;
             string[] generi = Enum.GetNames(typeof(sesso));
 
-            Console.WriteLine("\nInserisci il genere:\n");
             for (int i = 0; i < generi.Length; i++)
             {
                 Console.WriteLine($"[{i + 1}] <<  {generi[i]}");
             }
+            int scelta = Convert.ToInt32(Console.ReadLine());
 
-            scelta = Convert.ToInt32(Console.ReadLine());
+            switch (scelta)
+            {
+                case 0:
+                    persone[pos].genere = sesso.uomo;
+                    break;
 
-            return scelta;
+                case 1:
+                    persone[pos].genere = sesso.donna;
+                    break;
+            }
+            return persone[pos].genere;
         }
 
-        static int SceltaStatoCivile(persona[] persone)
+        static statoCivile SceltaStatoCivile(persona[] persone, ref int pos)
         {
-            int scelta;
             string[] stato = Enum.GetNames(typeof(statoCivile));
 
-            Console.WriteLine("\nInserisci lo stato civile:\n");
             for (int i = 0; i < stato.Length; i++)
             {
                 Console.WriteLine($"[{i + 1}] <<  {stato[i]}");
             }
+            int scelta = Convert.ToInt32(Console.ReadLine());
 
-            scelta = Convert.ToInt32(Console.ReadLine());
+            switch (scelta)
+            {
+                case 1:
+                    persone[pos].stato = statoCivile.celibe;
+                    break;
 
-            return scelta;
+                case 2:
+                    persone[pos].stato = statoCivile.nubile;
+                    break;
+
+                case 3:
+                    persone[pos].stato = statoCivile.coniugato;
+                    break;
+
+                case 4:
+                    persone[pos].stato = statoCivile.vedovo;
+                    break;
+
+                case 5:
+                    persone[pos].stato = statoCivile.separato;
+                    break;
+            }
+            return persone[pos].stato;
         }
 
         static void Visualizza(persona[] persone, int pos)
@@ -306,37 +332,13 @@ namespace Anagrafe
                 Console.WriteLine($"Genere: {persone[i].genere}");
                 Console.WriteLine($"Stato civile: {persone[i].stato}");
                 Console.WriteLine("================================\n\n");
-
             }
         }
 
-        static void EtaPersona(persona[] persone, string codFiscale)
-        {
-            DateTime data = DateTime.Now;
-            int eta = -1;
-
-            Console.Write("Inserisci il codice fiscale della persona della quale vuoi sapere l'età: ");
-            codFiscale = Console.ReadLine();
-
-            foreach (var persona in persone)
-            {
-                if (persona.codFiscale == codFiscale)
-                {
-                    eta = Anni(persona.nascita, data);
-                    Console.WriteLine($"\nNome: {persona.nome}\nCognome: {persona.cognome}\nEtà: {eta}\n");
-                    break;
-                }
-            }
-
-            if (eta == -1)
-            {
-                Console.WriteLine("\nNessuna persona trovata all'iterno dell'Anagrafe con questo codice fiscale\n");
-            }
-        }
-
-        static int Anni(DateTime nascita, DateTime data)
+        static int Anni(DateTime nascita)
         {
             int eta;
+            DateTime data = DateTime.Now;
 
             eta = data.Year - nascita.Year;
 
@@ -344,105 +346,29 @@ namespace Anagrafe
             {
                 eta--;
             }
-
             return eta;
         }
 
-        static int MenuEta(persona[] persone)
+        static statoCivile Modifica(persona[] persone, string codFiscale, ref int pos)
         {
-            int scelta;
-
-            Console.WriteLine("Inserisci la scelta:\n");
-            Console.WriteLine("[1] <<  persona");
-            Console.WriteLine("[2] <<  archivio");
-
-            scelta = Convert.ToInt32(Console.ReadLine());
-            Console.Clear();
-
-            return scelta;
-
-        }
-
-        static void Archivio(persona[] persone, int pos)
-        {
-            DateTime data = DateTime.Now;
+            int p = 0;
 
             for (int i = 0; i < pos; i++)
             {
-                Console.WriteLine($"========== {i + 1}° PERSONA ==========\n");
-                Console.WriteLine($"Nome: {persone[i].nome}");
-                Console.WriteLine($"Cognome: {persone[i].cognome}");
-                Console.Write($"Età: ");
-                Console.Write(Anni(persone[i].nascita, data));
-                Console.WriteLine("\n================================\n\n");
-            }
-        }
-
-        static void Modifica(persona[] persone, string codFiscale)
-        {
-            bool trovato = false;
-            int pos = 0;
-
-            Console.Write("Inserisci il codice fiscale della persona della quale vuoi modificare lo stato civile: ");
-            codFiscale = Console.ReadLine();
-
-            foreach (var persona in persone)
-            {
-                if (persona.codFiscale == codFiscale)
+                if (persone[i].codFiscale == codFiscale)
                 {
-                    trovato = true;
-                    switch (SceltaStatoCivile(persone))
-                    {
-                        case 1:
-                            persone[pos].stato = statoCivile.celibe;
-                            break;
-
-                        case 2:
-                            persone[pos].stato = statoCivile.nubile;
-                            break;
-
-                        case 3:
-                            persone[pos].stato = statoCivile.coniugato;
-                            break;
-
-                        case 4:
-                            persone[pos].stato = statoCivile.vedovo;
-                            break;
-
-                        case 5:
-                            persone[pos].stato = statoCivile.separato;
-                            break;
-                    }
-                    break;
-                }
-                else
-                {
-                    pos++;
+                    p = i;
                 }
             }
-            if (!trovato)
-            {
-                Console.WriteLine("\nNessuna persona trovata all'interno dell'Anagrafe con questo codice fiscale");
-            }
-            else
-            {
-                Console.WriteLine("\nModifica completata");
-            }
+            return SceltaStatoCivile(persone, ref p);
         }
 
         static void Cancella(persona[] persone, string codFiscale, ref int pos)
         {
-            bool trovato = false;
-
-            Console.Write("Inserisci il codice fiscale della persona della persona che vuoi rimuovere dall'archivio: ");
-            codFiscale = Console.ReadLine();
-
-            for (int i = 0; i < persone.Length; i++)
+            for (int i = 0; i < pos; i++)
             {
                 if (persone[i].codFiscale == codFiscale)
                 {
-                    trovato = true;
-
                     if (i == persone.Length - 1)
                     {
                         persone[pos - 1] = new persona();
@@ -461,18 +387,12 @@ namespace Anagrafe
                     }
                 }
             }
-            if (!trovato)
-            {
-                Console.WriteLine("\nNessuna persona trovata all'interno dell'Anagrafe con questo codice fiscale");
-            }
-            else
-            {
-                Console.WriteLine("\nCancellazione completata");
-            }
         }
+
         static void ScriviFile(string path, string stringa)
         {
             path += "\\" + DateTime.Now.ToShortDateString().Replace('/', '_') + ".txt";
+
             StreamWriter sw = File.AppendText(path);
             sw.WriteLine(DateTime.Now.ToString() + " " + stringa);
             sw.Close();
@@ -488,6 +408,7 @@ namespace Anagrafe
                 Console.WriteLine(linea);
                 linea = sr.ReadLine();
             }
+            sr.Close();
         }
 
         static string SceltaFile(string path)
@@ -499,10 +420,8 @@ namespace Anagrafe
             {
                 nomi[i] = Path.GetFileName(file[i]);
             }
-
             return file[Menu(nomi, "  FILE  ")];
         }
-
     }
 }
 
